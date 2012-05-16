@@ -1,0 +1,702 @@
+== 安装 ==
+本本扩展内存到了4G，网上有研究发现64位的操作系统不但可以充分利用内存，且在某些应用上还有性能改进。于时，决定安装64位的Ubuntu 12.04 LTS.
+
+从[http://mirrors.tuna.tsinghua.edu.cn/ubuntu-releases/12.04/ubuntu-12.04-desktop-amd64.iso:tuna]下载桌面安装光盘镜像，利用另一台已安装的ubuntu 10.04的'''create startup disk(制作启动盘)'''将其刻录到一个U盘上，通过U盘顺利安装。（一直使用ultra iso来制作启动U盘，这次却不能成功，并导致浪费了一张光盘。）
+
+我平时使用率最高的，
+# 中文环境，
+# LaTeX文件编辑、编译及相关，
+# 开发环境java和Eclipse及相关，和
+# skype用来开会，
+所以这四点是安装与配置的重点，其它是都是有可能用到的。
+
+经过配置之后，隐藏了laucher panel而淡化了unity的风格，以一种类似gnome3的形式使用桌面系统。
+
+== 修改软件源 ==
+编辑/etc/apt/sources.list，将其中的所有域名替换为 mirrors.tuna.tsinghua.edu.cn,
+同时，将最后两行注释掉，否则会导致源重复错误.  
+<pre>
+$sudo apt-get update
+$sudo apt-get upgrade
+</pre>
+重复上二步直接没有更新(loop until update to date)
+
+== 安装quake ==
+通过software-center来安装quake, 并设置它为开机启动。
+
+quake通过按键F12激活。
+
+== 设置中文 ==
+<pre>
+ System settings--language support--install remove language-- chinese simplified.
+</pre>
+将'''汉语'''一项拖拽到列表第一行，点击'''apply system wide''', 然后重启系统.
+
+重启后会弹出窗口，询问是否将目录名称改为汉语，选择'''不再询问'''，并点击保持目录名称为英文.
+
+
+== 设置输入法 ==
+进入'''iBus'''设置，
+* '''输入法--自定义活动输入法--选择输入法'''，调整输入法顺序。
+* '''常规则'''，选中'''在系统托盘上显示图标'''及'''在语言栏上显示输入法名字'''
+重新启动系统。
+== 安装 texlive 2012 ==
+其实是'''texlive 2011'''版本.
+<pre>
+$sudo apt-get install perl-tk #下面图形安装用到的库
+$mkdir ~/tmp && cd ~/tmp
+$wget www.tug.org/texlive/..../install-tl-unx.tar.gz 
+$tar zxvf install-tl-unx.tar.gz 
+$cd install-tl*
+$sudo ./install-tl -gui=perltk --location http://mirrors.tuna.tsinghua.edu.cn/CTAN/systems/texlive/tlnet -repository http://mirrors.tuna.tsinghua.edu.cn/CTAN/systems/texlive/tlnet -lang zh-cn
+#语言集合：中文与英文
+#创建指向系统目录的符号链接：是
+$sudo cp /usr/local/texlive/2011/texmf-var/fonts/conf/texlive-fontconfig.conf /etc/fonts/conf.d/09-texlive.conf
+$sudo mkdir -p /usr/share/fonts/win 
+$sudo cp /path/to/fonts/*{TTF,ttf,TTC,ttc,OTF,otf} /usr/share/fonts/win
+#注意检查字体文件的权限属性
+$sudo fc-cache -fsv
+$fc-list :lang=zh
+$xelatex test.tex #测试
+</pre>
+
+测试文件text.tex
+<pre>
+
+\documentclass[11pt]{article}
+\usepackage[BoldFont,SlantFont,CJKsetspaces,CJKchecksingle]{xeCJK}
+\setCJKmainfont[BoldFont=SimHei]{SimSun}
+\setCJKmonofont{SimSun}% 设置缺省中文字体
+\parindent 2em   %段首缩进
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{color}
+\usepackage[colorlinks]{hyperref}
+\newtheorem{thm}{THEOREM}
+\newtheorem{lma}{LEMMA}
+\newtheorem{clr}{COROLLARY}
+\newtheorem{asm}{Assumption}
+\newcommand{\argmax}{\operatornamewithlimits{argmax}}
+\newcommand{\argmin}{\operatornamewithlimits{argmin}}
+\newcommand{\ud}{\mathrm{d}}%this is used to input dx of \int
+
+\title{\textbf{题目}}
+\author{名字}
+\date{\today}
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section{第一章}
+
+prediction 预测: \url{http://en.wikipedia.org/wiki/Prediction}
+
+Huffman coding : 
+\begin{itemize}
+	\item \url{http://en.wikipedia.org/wiki/Huffman\_coding}
+	\item \url{http://baike.baidu.com/view/4225236.htm}
+\end{itemize}
+
+Adaptive Huffman coding [dynamic Huffman coding]: \url{Ahttp://en.wikipedia.org/wiki/Adaptive_Huffman_coding}
+
+\end{document}
+</pre>
+
+== texlive安装本地化 ==
+刚才安装的texlive，并不会出现在系统的包依赖关系中，因此，当安装其它需要依赖latex或tex的软件包，系统会要求安装软件源中的texlive，这样就安装重复了。本节的操作，即告诉系统所需要的软件已经安装在本地了。
+
+<pre>
+$sudo apt-get install equivs
+$mkdir ~/tmp && cd ~/tmp
+$equivs-control texlive-dummy
+$gedit texlive-dummy 
+$equivs-build texlive-dummy
+$sudo dpkg -i texlive-dummy_1.0_all.deb 
+$cd ..&&rm -rf tmp
+</pre>
+
+texlive-dummy文件内容
+<pre>
+### Commented entries have reasonable defaults.
+### Uncomment to edit them.
+# Source: <source package name; defaults to package name>
+Section: misc
+Priority: optional
+# Homepage: <enter URL here; no default>
+Standards-Version: 3.9.2
+
+Section: tex
+Package: texlive-dummy
+Provides: texlive, texlive-base-bin, texlive-base-bin-doc,texlive-bibtex-extra, texlive-common, texlive-doc-base, texlive-doc-bg,texlive-doc-cs+sk, texlive-doc-de, texlive-doc-el, texlive-doc-en,texlive-doc-es, texlive-doc-fi, texlive-doc-fr, texlive-doc-it,texlive-doc-ko, texlive-doc-mn, texlive-doc-nl, texlive-doc-pl,texlive-doc-pt, texlive-doc-ru, texlive-doc-th, texlive-doc-tr,texlive-doc-uk, texlive-doc-vi, texlive-doc-zh, texlive-extra-utils,texlive-font-utils, texlive-fonts-extra, texlive-fonts-extra-doc,texlive-fonts-recommended, texlive-fonts-recommended-doc,texlive-formats-extra, texlive-full, texlive-games,texlive-generic-extra, texlive-generic-recommended, texlive-humanities,texlive-humanities-doc, texlive-lang-african, texlive-lang-all,texlive-lang-arab, texlive-lang-armenian, texlive-lang-cyrillic,texlive-lang-czechslovak, texlive-lang-danish, texlive-lang-dutch,texlive-lang-finnish, texlive-lang-french, texlive-lang-german,texlive-lang-greek, texlive-lang-hebrew, texlive-lang-hungarian,texlive-lang-indic, texlive-lang-italian, texlive-lang-latin,texlive-lang-manju, texlive-lang-mongolian, texlive-lang-norwegian,texlive-lang-polish, texlive-lang-portuguese, texlive-lang-spanish,texlive-lang-swedish, texlive-lang-tibetan, texlive-lang-ukenglish,texlive-lang-vietnamese, texlive-latex-base, texlive-latex-base-doc,texlive-latex-extra, texlive-latex-extra-doc, texlive-latex-recommended,texlive-latex-recommended-doc, texlive-latex3, texlive-math-extra,texlive-metapost, texlive-metapost-doc, texlive-music, texlive-omega,texlive-pictures, texlive-pictures-doc, texlive-plain-extra,texlive-pstricks, texlive-pstricks-doc, texlive-publishers,texlive-publishers-doc, texlive-science, texlive-science-doc,texlive-xetex, texlive-lang-other, texlive-lang-croatian, texlive-base,texlive-doc-ja, cm-super, lmodern, latex-xcolor, latex-beamer, pgf, preview-latex-style, tex-common, latex-xft-fonts, asymptote, asymptote-doc, blt, context, dblatex, feynmf, lacheck, latex2html, luatex, lilypond, lilypond-data, lmodern, tex4ht, tex4ht-common, dvipdfmx
+Description: TeXlive dummy package
+ This package provides dpkg with the information that
+ there is a local TeXlive version installed.
+</pre>
+
+== 安装pdf阅读器 ==
+默认的evince不能看comments与annotation，所以安装adobe pdf reader.
+<pre>
+sudo apt-add-repository "deb://archive.canonical.com/ubuntu precise partner"
+
+sudo apt-get install acroread acroread-fonts
+</pre>
+== 安装gummi ==
+gummi一个很精彩的功能是，你一边输入latex格式文件源码，它一边动态生成pdf供预览效果.
+
+<pre>
+$sudo add-apt-repository ppa:gummi/gummi
+$sudo apt-get update
+$sudo apt-get install gummi
+</pre>
+运行后设置gummi: 
+* 视图：与编辑器同步预览
+* 文档: 设置编译选项
+** 编译选项: xetex, 启用SyncTex, tex->pdf
+** 默认文字：
+<pre>
+\documentclass[11pt]{article}
+%Gummi|063|=)
+\usepackage[BoldFont,SlantFont,CJKsetspaces,CJKchecksingle]{xeCJK}
+\setCJKmainfont[BoldFont=SimHei]{SimSun}
+\setCJKmonofont{SimSun}% 设置缺省中文字体
+\parindent 2em   %段首缩进
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{color}
+\usepackage[colorlinks]{hyperref}
+\newtheorem{thm}{THEOREM}
+\newtheorem{lma}{LEMMA}
+\newtheorem{clr}{COROLLARY}
+\newtheorem{asm}{Assumption}
+\newcommand{\argmax}{\operatornamewithlimits{argmax}}
+\newcommand{\argmin}{\operatornamewithlimits{argmin}}
+\newcommand{\ud}{\mathrm{d}}%this is used to input dx of \int
+\usepackage{alltt}
+
+\title{\textbf{Welcome to Gummi 0.6.3}}
+\author{Hedong Yang}
+\date{\today}
+\usepackage{graphicx}
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+...其它内容同gummi自带的默认文字...
+</pre>
+
+== 安装JDK 1.7 ==
+一直不习惯用openjdk，每次都是自己手动安装Sun/Oracle的JDK。安装完成之后，需要手工指定已本地安装了java及相关的命令.
+<pre>
+$mkdir ~/tmp && cd ~/tmp
+$wget java.oracle.com/.../jdk-7u4-linux-x64.tar.gz
+$tar zxvf jdk-7u4-linux-x64.tar.gz 
+$tar zxvf jdk-7u4-linux-x64-demos.tar.gz 
+$unzip jdk-7u4-apidocs.zip 
+$mv docs jdk1.7.0_04/
+$sudo mkdir -p /usr/lib/jvm
+$sudo cp -rf jdk1.7* /usr/lib/jvm/
+$cd /usr/lib/jvm
+$sudo ln -s  jdk1.7.0_04 java-7-oracle 
+$cd ~/tmp
+$sudo gedit /usr/lib/jvm/.java-7-oracle.jinfo #文件内容见后
+$sudo jdk-update-alternatives-script.sh # 文件内容见后，运行时可能会出现错误，但似乎不影响结果
+$sudo apt-get install java-common #下面update-java-alternatives用到
+$sudo update-java-alternatives -s java-7-oracle 
+</pre>
+
+java-7-oracle.jinfo文件内容
+<pre>
+name=java-7-oracle-1.7.0
+alias=java-7-oracle
+priority=73
+section=non-free
+
+jre ControlPanel /usr/lib/jvm/java-7-oracle/jre/bin/ControlPanel
+jre java /usr/lib/jvm/java-7-oracle/jre/bin/java
+jre java_vm /usr/lib/jvm/java-7-oracle/jre/bin/java_vm
+jre javaws /usr/lib/jvm/java-7-oracle/jre/bin/javaws
+jre jcontrol /usr/lib/jvm/java-7-oracle/jre/bin/jcontrol
+jre keytool /usr/lib/jvm/java-7-oracle/jre/bin/keytool
+jre pack200 /usr/lib/jvm/java-7-oracle/jre/bin/pack200
+jre policytool /usr/lib/jvm/java-7-oracle/jre/bin/policytool
+jre rmid /usr/lib/jvm/java-7-oracle/jre/bin/rmid
+jre rmiregistry /usr/lib/jvm/java-7-oracle/jre/bin/rmiregistry
+jre unpack200 /usr/lib/jvm/java-7-oracle/jre/bin/unpack200
+jre orbd /usr/lib/jvm/java-7-oracle/jre/bin/orbd
+jre servertool /usr/lib/jvm/java-7-oracle/jre/bin/servertool
+jre tnameserv /usr/lib/jvm/java-7-oracle/jre/bin/tnameserv
+jre jexec /usr/lib/jvm/java-7-oracle/jre/lib/jexec
+jdk appletviewer /usr/lib/jvm/java-7-oracle/bin/appletviewer
+jdk apt /usr/lib/jvm/java-7-oracle/bin/apt
+jdk extcheck /usr/lib/jvm/java-7-oracle/bin/extcheck
+jdk idlj /usr/lib/jvm/java-7-oracle/bin/idlj
+jdk jar /usr/lib/jvm/java-7-oracle/bin/jar
+jdk jarsigner /usr/lib/jvm/java-7-oracle/bin/jarsigner
+jdk java-rmi.cgi /usr/lib/jvm/java-7-oracle/bin/java-rmi.cgi
+jdk javac /usr/lib/jvm/java-7-oracle/bin/javac
+jdk javadoc /usr/lib/jvm/java-7-oracle/bin/javadoc
+jdk javah /usr/lib/jvm/java-7-oracle/bin/javah
+jdk javap /usr/lib/jvm/java-7-oracle/bin/javap
+jdk jconsole /usr/lib/jvm/java-7-oracle/bin/jconsole
+jdk jdb /usr/lib/jvm/java-7-oracle/bin/jdb
+jdk jhat /usr/lib/jvm/java-7-oracle/bin/jhat
+jdk jinfo /usr/lib/jvm/java-7-oracle/bin/jinfo
+jdk jmap /usr/lib/jvm/java-7-oracle/bin/jmap
+jdk jps /usr/lib/jvm/java-7-oracle/bin/jps
+jdk jrunscript /usr/lib/jvm/java-7-oracle/bin/jrunscript
+jdk jsadebugd /usr/lib/jvm/java-7-oracle/bin/jsadebugd
+jdk jstack /usr/lib/jvm/java-7-oracle/bin/jstack
+jdk jstat /usr/lib/jvm/java-7-oracle/bin/jstat
+jdk jstatd /usr/lib/jvm/java-7-oracle/bin/jstatd
+jdk native2ascii /usr/lib/jvm/java-7-oracle/bin/native2ascii
+jdk rmic /usr/lib/jvm/java-7-oracle/bin/rmic
+jdk schemagen /usr/lib/jvm/java-7-oracle/bin/schemagen
+jdk serialver /usr/lib/jvm/java-7-oracle/bin/serialver
+jdk wsgen /usr/lib/jvm/java-7-oracle/bin/wsgen
+jdk wsimport /usr/lib/jvm/java-7-oracle/bin/wsimport
+jdk xjc /usr/lib/jvm/java-7-oracle/bin/xjc
+plugin xulrunner-1.9-javaplugin.so /usr/lib/jvm/java-7-oracle/jre/lib/amd64/libnpjp2.so
+plugin firefox-javaplugin.so /usr/lib/jvm/java-7-oracle/jre/lib/amd64/libnpjp2.so
+plugin iceape-javaplugin.so /usr/lib/jvm/java-7-oracle/jre/lib/amd64/libnpjp2.so
+plugin iceweasel-javaplugin.so /usr/lib/jvm/java-7-oracle/jre/lib/amd64/libnpjp2.so
+plugin mozilla-javaplugin.so /usr/lib/jvm/java-7-oracle/jre/lib/amd64/libnpjp2.so
+plugin midbrowser-javaplugin.so /usr/lib/jvm/java-7-oracle/jre/lib/amd64/libnpjp2.so
+plugin xulrunner-javaplugin.so /usr/lib/jvm/java-7-oracle/jre/lib/amd64/libnpjp2.so
+</pre>
+jdk-update-alternatives-script.sh内容
+<pre>
+#!/bin/bash
+# "Register JDK7 for update-alternatives Script in Debian Way"
+# Based on 1. codeslinger's "install_java7_alternatives" from https://gist.github.com/445930
+#          2. oracle-java6-plugin.deb postint script (for plugin)
+# Modified by Cheng-Wei Chien<e.cwchien@gmail.com>, 2011-07-30
+# ------------------------------------------------------------------------------
+# Note:  This script works on x86 Debian GNU/Linux.
+#        If you use other arch or distro, you may have to modify some parameters.
+#
+# Usage: 1. Extract jdk7 tar.gz to, for example, /usr/lib/jvm/java-7-oracle-1.7.0,
+#           create a symbolic link /usr/lib/jvm/java-7-oracle to it.
+#        2. Download java-7-oracle.jinfo from https://gist.github.com/1114515,
+#           move it to /usr/lib/jvm/.java-7-oracle.jinfo, do some modification if necessary.
+#        3. Run this script with sudo
+#        4. sudo update-java-alternatives -s java-7-oracle
+#        5. Have fun with jdk7!
+#
+# Trouble Shooting: If something goes wrong,
+#        1. Uncomment "remove" commands and comment "install" commands.
+#        2. Run this script again to rollback.
+#        3. Fix what causes the problem, maybe typo or something else.
+#        4. Comment "remove" commands and uncomment "install" commands
+#        5. Run this script to update
+
+# Force the shell to exit immediately if something goes wrong
+set -e
+
+# Follow the Debian's priority rule for java5 = 53, java6 = 63 .. I guess
+priority=73
+
+# Your jdk7 home, in this case, it's /usr/lib/jvm/java-7-oracle-1.7.0
+# But I create a symbolic link /usr/lib/jvm/java-7-oracle to meet Debian's way
+basedir=/usr/lib/jvm/java-7-oracle
+
+# Your man1 dir, you don't need to change this
+mandir=$basedir/man/man1
+
+# Variables from /usr/lib/jvm/.java-6-oracle.jinfo except HtmlConverter (not in jdk7)
+jdk_var='appletviewer apt extcheck idlj jar jarsigner java-rmi.cgi javac javadoc javah javap jconsole jdb jhat jinfo jmap jps jrunscript jsadebugd jstack jstat jstatd native2ascii rmic schemagen serialver wsgen wsimport xjc'
+jre_var='ControlPanel java java_vm javaws jcontrol keytool pack200 policytool rmid rmiregistry unpack200 orbd servertool tnameserv jexec'
+browser_var="xulrunner-addons firefox iceape iceweasel mozilla midbrowser xulrunner"
+
+# Java plugin path, you don't need to change this
+plugin=$basedir/jre/lib/amd64/libnpjp2.so
+
+# First, gzip man1 files to meet the 1.gz form
+if [ -e $mandir ]; then
+  for i in $mandir/*.1; do
+    gzip $i
+  done
+fi
+
+# Register jdk variables
+for i in $jdk_var; do
+  unset slave || true
+  if [ -e $mandir/$i.1.gz ]; then
+    slave="--slave /usr/share/man/man1/$i.1.gz $i.1.gz $mandir/$i.1.gz"
+  fi
+  #update-alternatives --remove $i $basedir/bin/$i
+  update-alternatives --install /usr/bin/$i $i $basedir/bin/$i $priority $slave
+done
+
+# Register jre variables
+for i in $jre_var; do
+  unset slave || true
+  if [ -e $mandir/$i.1.gz ]; then
+    slave="--slave /usr/share/man/man1/$i.1.gz $i.1.gz $mandir/$i.1.gz"
+  fi
+  if [ $i = jexec ]; then
+    #update-alternatives --remove jexec $basedir/jre/lib/jexec
+    update-alternatives --install /usr/bin/jexec jexec $basedir/jre/lib/jexec $priority
+  else
+    #update-alternatives --remove $i $basedir/jre/bin/$i
+    update-alternatives --install /usr/bin/$i $i $basedir/jre/bin/$i $priority $slave
+  fi
+done
+
+# Register plugins
+for i in $browser_var; do
+  if [ $i = xulrunner-addons ]; then
+    browser=xulrunner-1.9
+  else
+    browser=$i
+  fi
+  #update-alternatives --remove $browser-javaplugin.so $plugin
+  update-alternatives --install /usr/lib/$i/plugins/libjavaplugin.so $browser-javaplugin.so $plugin $priority
+done
+</pre>
+
+== 安装eclipse ==
+# 直接从www.eclipse.org下载eclipse-java-indigo-SR2-linux-gtk-x86_64.tar.gz解压缩安装
+# 安装svn插件subclipse(因为跟命令行结合更紧密),根本版本选择 update_1.6.x 那个url
+# 安装folding插件coffeebytes,原作者已停止开发与维护，网上尚存可安装包.
+
+== 安装skype ==
+<pre>
+sudo apt-get install libqt4-dbus libqt4-network libqt4-xml libasound2
+wget http://www.skype.com/go/getskype-linux-beta-ubuntu-64 -O skype_ubuntu-current_amd64.deb
+sudo dpkg -i skype-*.deb
+sudo apt-get -f install
+</pre>
+比较不爽的是，所谓的skype 64位安装，其是对32系统的包装，这个安装几乎安装了所有i386的32位库。
+
+from : http://ubuntuguide.net/install-skype-on-ubuntu-11-04-natty-narwhal-3264-bit
+
+== 安装vim/gvim ==
+通过software-center(软件中心)安装源中vim/gvim,以及latex suite.
+
+去vim.org下载并安装vim的插件calendar和vimwiki两个插件，以及需要的颜色主题.
+
+== 安装svn/git ==
+<pre>
+#software-center install subversion
+$sudo add-apt-repository ppa:git-core/ppa
+$sudo apt-get update
+$sudo apt-get install git git-svn gitweb gitk
+</pre>
+
+编辑.bashrc
+<pre>
+alias gitk='gitk --all'
+</pre>
+编辑.gitconfig
+<pre>
+[alias]
+    lg1 = log --graph --all --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%cr)%C(reset) %C(white)%s%C(reset) %C(bold white)— %cn%C(reset)%C(bold yellow)%d%C(reset)' --abbrev-commit --date=relative
+    lg2 = log --graph --all --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%cD%C(reset) %C(bold green)(%cr)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(bold white)— %cn%C(reset)' --abbrev-commit
+    lg3 = log --graph --date-order -C -M --pretty=format:\"<%h> %ad [%an] %Cgreen%d%Creset %s\" --all --date=short
+</pre>
+
+使用
+<pre>
+$gitk
+$git lg1
+$git lg2
+$git lg2
+</pre>
+
+from http://stackoverflow.com/questions/1057564/pretty-git-branch-graphs
+
+== 安装mysql server/client ==
+<pre>
+software-center install mysql server/mysql client
+</pre>
+数据库的迁移,'''注意，新库必须为空，否则重名库或表的数据可能会出问题，另迁移后root用户的密码亦变为旧库所用的密码''',
+<pre>
+$mysqldum --all-databases -u root -p >mysql.dump
+$mysql: source mysql.dump
+$sudo service mysql restart # 导入的数据重启后方能生效
+</pre>
+
+== 安装tomboy及gtg ==
+tomboy正统稳定，但需要mono的支持而安装一堆包，向来不喜欢用，而用gnote。这次安装gnote之后，发现不能出现托盘中（需要修改系统配置，参见本文[[#安装配置工具]]中dconf-editor举例），于时弃用并重拾tomboy.
+
+<pre>
+$sudo add-apt-repository ppa:gtg/ppa
+$sudo apt-get update
+$sudo apt-get install gtg
+$software-center install tomboy #可以显示在托盘区
+</pre>
+
+安装gnote的命令,备查。
+<pre>
+#sudo add-apt-repository ppa:gnote/ppa
+#sudo apt-get update
+#sudo apt-get install gnote
+</pre>
+
+== 安装字典stardict/dict ==
+<pre>
+software-center install dict dictd dictxdict dict-stardic dict-gcide stardict
+</pre>
+stardict所需要的字典可以到http://abloz.com/huzheng/stardict-dic/zh_CN/下载并解压到/usr/share/stardict/dic安装
+
+dict安装也可通过software-center
+<pre>
+sudo apt-get install dict 客户端 （完后修改/etc/dictd/dict.conf来控制只从本地读字典，注释掉后面的服务器地址）
+sudo apt-get install dictd 服务器端
+sudo apt-get install dict-xdict dict-stardic 这两个是英汉字典的数据文件，翻译结果差不多。
+sudo apt-get install dict-gcide 这个15M多的英文字典翻译结果很全，推荐安装。
+</pre>
+
+== 安装 gimp  ==
+<pre>
+$sudo apt-get install gimp
+</pre>
+插件
+<pre>
+tear-off plugin
+</pre>
+
+== 安装dia/inkscape/openfetion/qterm/docky/sshserver+client/deluge/amule ==
+<pre>
+software-center remove transmission
+software-center install dia inkscape openfetion qterm docky sshserver/client deluge amule
+</pre>
+去掉已安装的软件，只为使用习惯不同。
+
+docky不是必须的，unity的launcher panel跟docky功能类似.
+
+== 安装 evolution ==
+<pre>
+software-center remove thurder-bird
+software-center install evolution
+</pre>
+evolution在管理信件之外，还有日历与任务管理功能。
+
+旧的evolution可以备份已有信件，在新安装的evolution首次启动时导入。
+
+== 安装mplayer ==
+目前最流行的播放器是vls player，此处安装mplayer因为习惯.
+<pre>
+software-center install mplayer
+</pre>
+mplayer的配置.mplayer/config 
+<pre>
+[default]
+# Write your default config options here!
+#font="AR PL UKai CN"
+#/*或者换成你喜欢的文泉译 */
+#font="WenQuanYi ZenHei"
+#subcp=cp950
+font="Microsoft YaHei"
+subcp=cp936
+slang = "chs,cht,eng"
+sub-fuzziness=1
+</pre>
+
+多媒体格式的插件也很重要
+<pre>
+software-center "ubuntu restricted extras"
+</pre>
+enable playing protected DVD's
+<pre>
+sudo /usr/share/doc/libdvdread4/install-css.sh
+</pre>
+
+no-free-codecs/w64codecs
+<pre>
+sudo wget --output-document=/etc/apt/sources.list.d/medibuntu.list http://www.medibuntu.org/sources.list.d/$(lsb_release -cs).list && sudo apt-get --quiet update && sudo apt-get --yes --quiet --allow-unauthenticated install medibuntu-keyring && sudo apt-get --quiet update
+sudo apt-get install w64codecs non-free-codecs libdvdcss2
+</pre>
+
+from http://sites.google.com/site/easylinuxtipsproject/multimedia
+
+== 安装apache2/twiki/mediawiki/moveabletype ==
+<pre>
+$sudo apt-get install apache2 libapache2-mod-php5 php5-cli php-apc php5-mcrypt php5-mysql
+</pre>
+Enable apache2 php5 module:
+<pre>
+$ a2enmod php5 
+</pre>
+
+恢复mediawiki/twiki/mt的配置及代码
+<pre>
+cp xx /etc/apache2/conf.d
+tar zxvf www.tar.gz /var/www
+</pre>
+
+配置apache2,注意docroot的用户权限问题apache2运行用户权限的匹配问题。
+<pre>
+vim /etc/apache2/envvars
+www-data->?
+</pre>
+
+Restart Apache:
+<pre>
+# apache2ctl restart
+</pre>
+
+== 安装指示器(indicators) ==
+<pre>
+$software-center install psensor #温度
+$software-center install system-load-indicator #系统负载
+$software-center install weather-indicator #本地天气
+</pre>
+psensor的配置
+<pre>
+$dpkg-reconfigure hddtemp #daemon 是否启动
+</pre>
+
+== 安装配置工具 ==
+<pre>
+$sudo apt-get install gconf-editor
+$software-center install CompizConfigSettingManager, compiz-plugins-extra
+$sudo apt-get install gnome-tweak-tool
+$sudo apt-get install dconf-tools
+</pre>
+运行ccsm(compiz config setting manager)
+* 显示桌面：
+** 如何显示，在"显示桌面"中配置；
+** 热键绑定，在"常规选项中"
+* 平铺窗口：在"缩放窗口"中配置与绑定
+* 平铺工作区：在"expo"中配置与绑定
+* 程序热键: "命令"中定义，例如firefox(s+f), qterm(s+q), gvim(s+v), gedit(s+g), evolution(s+l), eclipse(s+e), skype(s+k)
+
+修改配置，使得程序能自由加入托盘。
+<pre>
+dconf-editor desktop-unity-panel-systray-whitelist, ["all"]
+</pre>
+
+以下命令备忘不解释。
+<pre>
+* global menu
+sudo apt-get install indicator-applet-appmenu
+sudo apt-get install appmenu-gtk libqtgui4 indicator-applet-appmenu indicator-appmenu
+* To install Indicator Applet for GNOME 3
+sudo apt-get install indicator-applet indicator-applet-complete indicator-applet-session
+</pre>
+
+== 打开休眠功能(hibernate) ==
+test whether it works correctly by running '''pm-hibernate''' in a terminal
+
+如果成功，编辑文件/etc/polkit-1/localauthority/50-local.d/com.ubuntu.enable-hibernate.pkla 内容如下
+<pre>
+[Re-enable hibernate by default]
+Identity=unix-user:*
+Action=org.freedesktop.upower.hibernate
+ResultActive=yes
+</pre>
+
+
+from http://askubuntu.com/questions/94754/how-to-enable-hibernation-in-12-04
+
+== 代理 ==
+<pre>
+http://code.google.com/p/goagent/
+</pre>
+
+我的是h＊9＊e.app＊.com
+
+== firefox插件安装 ==
+<pre>
+downthem all
+flashgot
+foxproxy
+adblock plus
+</pre>
+
+== 安装bum/meld/ppa-purge ==
+<pre>
+$sudo apt-get install bum  #服务管理
+$sudo apt-get install meld #文件比较
+$sudo apt-get install ppa-purge #删除ppa源
+</pre>
+
+== 安装R ==
+<pre>
+$sudo apt-get install r-base
+$R
+R> install.packages(c("colorspace","gplots"));
+R> q();
+</pre>
+
+== 安装ant ==
+dowload, unzip, and ln -s
+
+不能使用源里的包，因为依赖openjdk.
+
+== rar解压缩 ==
+用file-roller打开rar文件，会提示安装rar.
+
+== rhythmbox配置 == 
+乱码问题,  编辑.profile
+<pre>
+export GST_ID3_TAG_ENCODING=GBK:UTF-8:GB18030
+export GST_ID3V2_TAG_ENCODING=GBK:UTF-8:GB18030
+</pre>
+
+插件问题，导入文件时会要求安装. gstream的相关插件都应该安装.
+
+== nfs 插件 ==
+<pre>
+software-center, mount所附nfs插件选中，并安装.
+</pre>
+
+== 防火墙 ==
+<pre>
+$sudo apt-get install ufw gufw
+</pre>
+在系统启动时启用和激活防火墙
+<pre>
+$sudo ufw enable
+</pre>
+查看状态
+<pre>
+$sudo ufw status verbose
+</pre>
+增加规则
+<pre>
+$sudo ufw deny 5353/udp
+$sudo ufw deny 5900/tcp
+$sudo ufw deny 22
+$sudo ufw deny 25/tcp
+$sudo ufw deny 135,139,445/tcp
+$sudo ufw deny 137,138/udp
+$sudo ufw deny 110
+$sudo ufw deny 2049
+$sudo ufw deny 143
+$sudo ufw deny 21/tcp
+</pre>
+或者通过gufw来配置
+
+== 系统优化 ==
+=== 运行速度提升 ===
+减少swap的使用，以提高ubuntu的运行速度
+<pre>
+sudo vim /etc/sysctl.conf
+
+# Decrease swap usage to a workable level
+vm.swappiness=10
+</pre>
+
+重启计算机，并检查改动情况：
+<pre>
+cat /proc/sys/vm/swappiness
+</pre>
+
+from http://sites.google.com/site/easylinuxtipsproject/first
+
+== 参考文献 ==
+* http://debianhelp.wordpress.com/2012/03/09/to-do-list-after-installing-ubuntu-12-04-lts-aka-precise-pangolin/
+
+几乎各种应用，都有提及。
+
+* http://sites.google.com/site/easylinuxtipsproject
+
+重要的bug或关键问题.
+
