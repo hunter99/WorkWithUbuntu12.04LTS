@@ -1,0 +1,23 @@
+== 背景知识 ==
+在eclipse上开发java应用项目时，系统可能要用日志功能，即所谓的logging功能。
+
+常见的日志包有log4j, apache commons-logging, jdk1.4以后自带的日志功能， 等等。
+
+现在出现了一个更牛的Simple Logging Facade for Java (SLF4J,[http://www.slf4j.org/index.html])日志框架。
+
+假定原代码中使用了commons-logging，slf4j可以做到将所有的commons-logging调用接管过来，
+然后再根据slf4j的配置，来选择和使用具体的日志记录包，比如log4j. (当然，commons-logging本身就
+是一个可配置的框架，根据设置来选择具体的日志记录包。此处，它再次被架空了).
+
+== Eclipse项目配置日志 ==
+假定有两个java应用项目，一个是A，它依赖另一个基础项目B。
+
+A使用commons-logging, B使用了slf4j。
+
+1) 配置B为slf4j-jcl-*-jar，即配置B使用commons-logging来具体实现记录功能；
+2) 在A项目的src/目录下，创建commons-logging.properties, log4j.properties, 
+即A使用commons-logging配合log4j来完成日志功能。
+
+则两个项目都可以据此配置文件正常工作.
+
+如果只有一个项目A，则只参考第2步即可.
