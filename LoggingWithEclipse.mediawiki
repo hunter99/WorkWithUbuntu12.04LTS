@@ -15,9 +15,12 @@
 A使用commons-logging, B使用了slf4j。
 
 1) 配置B为slf4j-jcl-*-jar，即配置B使用commons-logging来具体实现记录功能；
-2) 在A项目的src/目录下，创建commons-logging.properties, log4j.properties, 
+2) 在A项目的根目录下（即.project所在目录)，创建commons-logging.properties, log4j.properties, 
 即A使用commons-logging配合log4j来完成日志功能。
 
 则两个项目都可以据此配置文件正常工作.
+
+如果只在src/目录下创建这两个properties文件，则只有A项目可用.
+
 
 如果只有一个项目A，则只参考第2步即可.
