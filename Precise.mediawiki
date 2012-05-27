@@ -673,6 +673,11 @@ $sudo ufw deny 143
 $sudo ufw deny 21/tcp
 </pre>
 或者通过gufw来配置
+== 安装Chromium==
+<pre>
+software-center chromium
+</pre>
+因为firefox要用代理，chromium可以不用代理。
 
 == 系统优化 ==
 === 运行速度提升 ===
