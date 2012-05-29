@@ -678,7 +678,18 @@ $sudo ufw deny 21/tcp
 software-center chromium
 </pre>
 因为firefox要用代理，chromium可以不用代理。
+== 安装Impressive==
+<pre>
+sudo apt-get install mpressive
+</pre>
+播放pdf格式的ppt
 
+
+== 可能需要安装的软件 ==
+=== c/c++开发环境 ===
+<pre>
+sudo apt-get install build-essential
+</pre>
 == 系统优化 ==
 === 运行速度提升 ===
 减少swap的使用，以提高ubuntu的运行速度
