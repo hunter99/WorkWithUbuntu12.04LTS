@@ -572,6 +572,11 @@ $sudo apt-get install dconf-tools
 dconf-editor desktop-unity-panel-systray-whitelist, ["all"]
 </pre>
 
+去掉用得不方便的滚动条,编辑~/.xprofile
+<pre>
+export LIBOVERLAY_SCROLLBAR=0
+</pre>
+
 以下命令备忘不解释。
 <pre>
 * global menu
