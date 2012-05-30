@@ -683,7 +683,11 @@ software-center chromium
 sudo apt-get install mpressive
 </pre>
 播放pdf格式的ppt
-
+== 安装virtualbox ==
+<pre>
+sudo apt-get install virtualbox
+</pre>
+有一些文档或网站，还是需要windows下的软件才能打开或访问，纯属无奈之举。
 
 == 可能需要安装的软件 ==
 === c/c++开发环境 ===
