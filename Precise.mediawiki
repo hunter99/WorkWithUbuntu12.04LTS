@@ -41,6 +41,12 @@ quake通过按键F12激活。
 * '''常规则'''，选中'''在系统托盘上显示图标'''及'''在语言栏上显示输入法名字'''
 重新启动系统。
 == 安装 texlive 2012 ==
+<pre>
+sudo add-apt-repository ppa:texlive-backports/ppa
+sudo apt-get update
+sudo apt-get install texlive
+</pre>
+以下信息过时
 其实是'''texlive 2011'''版本.
 <pre>
 $sudo apt-get install perl-tk #下面图形安装用到的库
@@ -51,6 +57,8 @@ $cd install-tl*
 $sudo ./install-tl -gui=perltk --location http://mirrors.tuna.tsinghua.edu.cn/CTAN/systems/texlive/tlnet -repository http://mirrors.tuna.tsinghua.edu.cn/CTAN/systems/texlive/tlnet -lang zh-cn
 #语言集合：中文与英文
 #创建指向系统目录的符号链接：是
+以上信息过时
+
 $sudo cp /usr/local/texlive/2011/texmf-var/fonts/conf/texlive-fontconfig.conf /etc/fonts/conf.d/09-texlive.conf
 $sudo mkdir -p /usr/share/fonts/win 
 $sudo cp /path/to/fonts/*{TTF,ttf,TTC,ttc,OTF,otf} /usr/share/fonts/win
@@ -480,7 +488,7 @@ evolution在管理信件之外，还有日历与任务管理功能。
 旧的evolution可以备份已有信件，在新安装的evolution首次启动时导入。
 
 == 安装mplayer ==
-目前最流行的播放器是vls player，此处安装mplayer因为习惯.
+目前最流行的播放器是vlc player，此处安装mplayer因为习惯.
 <pre>
 software-center install mplayer
 </pre>
@@ -493,7 +501,8 @@ mplayer的配置.mplayer/config
 #font="WenQuanYi ZenHei"
 #subcp=cp950
 font="Microsoft YaHei"
-subcp=cp936
+#subcp=cp936
+sucp=utf8
 slang = "chs,cht,eng"
 sub-fuzziness=1
 </pre>
